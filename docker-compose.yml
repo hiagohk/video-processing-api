@@ -1,0 +1,41 @@
+
+version: '3.9'
+
+services:
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - localstack
+
+  worker:
+    build: .
+    command: python app/worker/worker.py
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - localstack
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: videos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+      - SKIP_SSL_CERT_DOWNLOAD=1
