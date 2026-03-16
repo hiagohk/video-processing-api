@@ -1,5 +1,5 @@
 
-import boto3, json, yt_dlp
+import boto3, json, time, yt_dlp
 from app.core.config import AWS_REGION, SQS_QUEUE_URL
 from app.db.session import SessionLocal
 from app.repositories.video_repository import update_status, save_result
@@ -13,12 +13,17 @@ def process_video(url):
         return info["title"], info.get("duration", 0)
 
 while True:
-
-    messages = sqs.receive_message(
-        QueueUrl=SQS_QUEUE_URL,
-        MaxNumberOfMessages=1,
-        WaitTimeSeconds=20
-    )
+    try:
+        messages = sqs.receive_message(
+            QueueUrl=SQS_QUEUE_URL,
+            MaxNumberOfMessages=1,
+            WaitTimeSeconds=10,
+        )
+        print(messages)
+    except Exception as e:
+        print("Queue not ready yet...", e)
+        time.sleep(5)
+        continue
 
     if "Messages" not in messages:
         continue

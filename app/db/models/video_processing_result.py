@@ -5,16 +5,6 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.db.base import Base
 
-class VideoRequest(Base):
-    __tablename__ = "video_requests"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    video_url = Column(String)
-    status = Column(String)
-    idempotency_key = Column(String, unique=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-
 class VideoProcessingResult(Base):
     __tablename__ = "video_processing_results"
 
