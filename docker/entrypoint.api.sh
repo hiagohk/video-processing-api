@@ -8,7 +8,6 @@ while ! nc -z postgres 5432; do
 done
 
 echo "Running migrations..."
-
 alembic upgrade head || exit 1
 
 echo "Starting API..."

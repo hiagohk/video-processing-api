@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.core.config import settings
+from app.core.config import DATABASE_URL
 from app.db.base_class import Base
 from app.db.models import *
 
@@ -17,7 +17,7 @@ target_metadata = Base.metadata
 
 config.set_main_option(
     "sqlalchemy.url",
-    settings.database_url
+    DATABASE_URL
 )
 
 

@@ -1,11 +1,17 @@
 
 import boto3, json, time, yt_dlp
-from app.core.config import AWS_REGION, SQS_QUEUE_URL
+from app.core.config import AWS_REGION, SQS_QUEUE_URL, AWS_ENDPOINT_URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 from app.db.session import SessionLocal
 from app.repositories.video_repository import update_status, save_result
 from app.db.models import VideoRequest
 
-sqs = boto3.client("sqs", region_name=AWS_REGION, endpoint_url="http://localstack:4566", aws_access_key_id="test", aws_secret_access_key="test")
+sqs = boto3.client(
+    "sqs",
+    region_name=AWS_REGION,
+    endpoint_url=AWS_ENDPOINT_URL,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
 
 def process_video(url):
     with yt_dlp.YoutubeDL({}) as ydl:

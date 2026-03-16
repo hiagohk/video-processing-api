@@ -9,10 +9,13 @@ COPY requirements-dev.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -r requirements-dev.txt
 RUN pip install psycopg2-binary
+RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY . .
 
 ENV PYTHONPATH=/app
-RUN chmod +x docker/entrypoint.sh
-CMD ["bash", "docker/entrypoint.sh"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN chmod +x docker/entrypoint.api.sh
+RUN chmod +x docker/entrypoint.worker.sh
+#ENTRYPOINT ["docker/entrypoint.sh"]
+#CMD ["bash", "docker/entrypoint.sh"]
+#CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
