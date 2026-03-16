@@ -1,5 +1,8 @@
 
-up:
+permissions:
+	chmod +x docker/localstack/init/*.sh
+
+up: permissions
 	docker-compose up --build
 
 build:
