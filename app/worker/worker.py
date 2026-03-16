@@ -5,7 +5,7 @@ from app.db.session import SessionLocal
 from app.repositories.video_repository import update_status, save_result
 from app.db.models import VideoRequest
 
-sqs = boto3.client("sqs", region_name=AWS_REGION, endpoint_url="http://localstack:4566")
+sqs = boto3.client("sqs", region_name=AWS_REGION, endpoint_url="http://localstack:4566", aws_access_key_id="test", aws_secret_access_key="test")
 
 def process_video(url):
     with yt_dlp.YoutubeDL({}) as ydl:

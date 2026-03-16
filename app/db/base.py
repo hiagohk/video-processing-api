@@ -1,4 +1,4 @@
+from app.db.base_class import Base
 
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from app.db.models.video_request import VideoRequest
+from app.db.models.video_processing_result import VideoProcessingResult
