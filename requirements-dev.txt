@@ -3,3 +3,6 @@ pytest-mock
 pytest-cov
 httpx
 faker
+ruff
+black
+pre-commit
