@@ -1,0 +1,61 @@
+
+
+services:
+  api:
+    build: .
+    entrypoint: ["bash", "docker/entrypoint.api.sh"]
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    depends_on:
+      - postgres
+      - localstack
+
+  worker:
+    build: .
+    entrypoint: ["bash", "docker/entrypoint.worker.sh"]
+    env_file:
+      - .env.docker
+    depends_on:
+      - postgres
+      - localstack
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: videos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      SERVICES: sqs
+      DEBUG: 1
+      SKIP_SSL_CERT_DOWNLOAD: 1
+    volumes:
+        - ./docker/localstack/init:/etc/localstack/init/ready.d
+    entrypoint: >
+      /bin/sh -c "
+      chmod +x /etc/localstack/init/ready.d/*.sh &&
+      exec docker-entrypoint.sh
+      "
+
+  test:
+    build: .
+    command: pytest --cov=app --cov-report=term-missing
+    env_file:
+      - .env.docker
+    environment:
+      - PYTHONPATH=/app
+    depends_on:
+      - postgres
+      - localstack
