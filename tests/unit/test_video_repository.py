@@ -1,13 +1,12 @@
 import uuid
 
+from app.db.models import VideoProcessingResult, VideoRequest
 from app.repositories.video_repository import (
-    find_by_idempotency,
     create_video_request,
-    update_status,
+    find_by_idempotency,
     save_result,
+    update_status,
 )
-
-from app.db.models import VideoRequest, VideoProcessingResult
 
 
 def test_create_video_request(db_session):

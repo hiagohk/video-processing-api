@@ -1,9 +1,8 @@
-from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.repositories.video_repository import create_video_request, find_by_idempotency
-from app.messaging.sqs_client import SQSClient
 from app.exceptions.queue import QueuePublishError
+from app.messaging.sqs_client import SQSClient
+from app.repositories.video_repository import create_video_request, find_by_idempotency
 
 # Criar instância global do cliente SQS
 sqs_client = SQSClient()

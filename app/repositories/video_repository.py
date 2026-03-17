@@ -1,5 +1,6 @@
 
-from app.db.models import VideoRequest, VideoProcessingResult
+from app.db.models import VideoProcessingResult, VideoRequest
+
 
 def find_by_idempotency(db, key):
     return db.query(VideoRequest).filter(VideoRequest.idempotency_key == key).first()

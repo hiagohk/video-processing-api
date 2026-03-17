@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 
-from app.schemas.video_schema import VideoCreate
 from app.db.session import get_db
+from app.schemas.video_schema import VideoCreate
 from app.services.video_service import create_video
 
 router = APIRouter()

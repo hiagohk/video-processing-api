@@ -1,9 +1,12 @@
 
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
+
 from app.db.base import Base
+
 
 class VideoProcessingResult(Base):
     __tablename__ = "video_processing_results"

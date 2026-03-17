@@ -1,17 +1,17 @@
-import json
-import time
-import logging
 import concurrent.futures
+import json
+import logging
+import time
 from typing import Dict, List
 
 import yt_dlp
 from sqlalchemy.orm import Session
 
-from app.db.session import SessionLocal
 from app.db.models import VideoRequest
-from app.repositories.video_repository import update_status, save_result
-from app.messaging.sqs_client import SQSClient
+from app.db.session import SessionLocal
 from app.exceptions.video import VideoDownloadError, VideoProcessingError
+from app.messaging.sqs_client import SQSClient
+from app.repositories.video_repository import save_result, update_status
 
 logger = logging.getLogger(__name__)
 sqs = SQSClient()
@@ -121,7 +121,7 @@ def handle_message(message: Dict):
                 extra={"request_id": request_id, "title": title},
             )
 
-        except Exception as e:
+        except Exception:
             logger.warning(
                 "Video processing failed",
                 extra={"request_id": request_id, "retries": retries},

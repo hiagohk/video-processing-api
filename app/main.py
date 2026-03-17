@@ -1,13 +1,14 @@
 
+import uuid
+
 from fastapi import FastAPI, Request
-from app.api.routes.videos import router
-from fastapi import FastAPI
-from app.exceptions.base import AppError
+
 from app.api.exception_handlers import (
     app_error_handler,
     unexpected_error_handler,
 )
-import uuid
+from app.api.routes.videos import router
+from app.exceptions.base import AppError
 
 app = FastAPI(title="Video Processing API")
 

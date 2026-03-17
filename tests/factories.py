@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from faker import Faker
 
 fake = Faker()

@@ -1,4 +1,4 @@
-from tests.factories import video_payload, idempotency_key
+from tests.factories import idempotency_key, video_payload
 
 
 def test_create_video(client):

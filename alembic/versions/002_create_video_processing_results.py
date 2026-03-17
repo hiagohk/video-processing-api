@@ -1,8 +1,8 @@
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from alembic import op
 
 revision = "002"
 down_revision = "001"

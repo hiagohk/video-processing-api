@@ -1,9 +1,12 @@
 
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
+
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
+
 from app.db.base_class import Base
+
 
 class VideoRequest(Base):
     __tablename__ = "video_requests"

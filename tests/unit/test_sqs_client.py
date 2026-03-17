@@ -1,15 +1,16 @@
 import json
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from botocore.exceptions import ClientError
 
-from app.messaging.sqs_client import SQSClient
 from app.exceptions.queue import (
-    QueueReceiveError,
+    InvalidQueueMessageError,
     QueueDeleteError,
     QueuePublishError,
-    InvalidQueueMessageError,
+    QueueReceiveError,
 )
+from app.messaging.sqs_client import SQSClient
 
 VIDEO_MESSAGE = {
     "video_request_id": "547026cb-c6b4-4d10-af7e-c2a65236b918",

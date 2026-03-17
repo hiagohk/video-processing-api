@@ -1,22 +1,22 @@
 import json
 import logging
+
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.config import (
-    AWS_REGION,
-    SQS_QUEUE_URL,
-    DLQ_QUEUE_URL,
-    AWS_ENDPOINT_URL,
     AWS_ACCESS_KEY_ID,
+    AWS_ENDPOINT_URL,
+    AWS_REGION,
     AWS_SECRET_ACCESS_KEY,
+    DLQ_QUEUE_URL,
+    SQS_QUEUE_URL,
 )
-
 from app.exceptions.queue import (
-    QueueReceiveError,
+    InvalidQueueMessageError,
     QueueDeleteError,
     QueuePublishError,
-    InvalidQueueMessageError,
+    QueueReceiveError,
 )
 
 logger = logging.getLogger(__name__)

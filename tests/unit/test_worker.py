@@ -1,14 +1,14 @@
 import json
-import pytest
 from unittest.mock import MagicMock
 
+from app.exceptions.video import VideoDownloadError
 from app.worker.worker import (
+    handle_message,
+    process_video,
     retry_with_backoff,
     run_with_timeout,
-    process_video,
-    handle_message,
 )
-from app.exceptions.video import VideoDownloadError
+
 
 def test_retry_with_backoff_success():
 
