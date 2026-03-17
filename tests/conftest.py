@@ -1,4 +1,4 @@
-import pytest
+import pytest, time, boto3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -59,3 +59,25 @@ def client(db_session):
         yield c
 
     app.dependency_overrides.clear()
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_sqs():
+    sqs = boto3.client(
+        "sqs",
+        endpoint_url="http://localstack:4566",
+        region_name="us-east-1",
+        aws_access_key_id="test",
+        aws_secret_access_key="test",
+    )
+
+    # espera o LocalStack ficar pronto
+    for _ in range(10):
+        try:
+            sqs.list_queues()
+            break
+        except Exception:
+            time.sleep(2)
+
+    # cria filas (idempotente)
+    sqs.create_queue(QueueName="video-processing-queue")
+    sqs.create_queue(QueueName="video-processing-dlq")

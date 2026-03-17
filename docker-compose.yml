@@ -43,11 +43,19 @@ services:
       SKIP_SSL_CERT_DOWNLOAD: 1
     volumes:
         - ./docker/localstack/init:/etc/localstack/init/ready.d
+    entrypoint: >
+      /bin/sh -c "
+      chmod +x /etc/localstack/init/ready.d/*.sh &&
+      exec docker-entrypoint.sh
+      "
 
   test:
     build: .
     command: pytest --cov=app --cov-report=term-missing
     env_file:
-      - .env
+      - .env.docker
     environment:
       - PYTHONPATH=/app
+    depends_on:
+      - postgres
+      - localstack
