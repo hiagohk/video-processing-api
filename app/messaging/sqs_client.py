@@ -34,9 +34,6 @@ class SQSClient:
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
         )
 
-    # ----------------------------
-    # Receber mensagens
-    # ----------------------------
     def receive_message(self, max_messages: int = 1, wait_time: int = 10):
         try:
             response = self.sqs.receive_message(
@@ -61,9 +58,7 @@ class SQSClient:
             logger.exception("Failed to receive messages from SQS")
             raise QueueReceiveError() from e
 
-    # ----------------------------
-    # Deletar mensagens
-    # ----------------------------
+
     def delete_message(self, receipt_handle: str):
         try:
             self.sqs.delete_message(
@@ -75,9 +70,7 @@ class SQSClient:
             logger.exception("Failed to delete message from SQS")
             raise QueueDeleteError() from e
 
-    # ----------------------------
-    # Enviar mensagem
-    # ----------------------------
+
     def send_message(self, body: dict, delay_seconds: int = 0):
         try:
             self.sqs.send_message(
@@ -90,9 +83,7 @@ class SQSClient:
             logger.exception("Failed to send message to SQS")
             raise QueuePublishError() from e
 
-    # ----------------------------
-    # Enviar para DLQ
-    # ----------------------------
+
     def send_to_dlq(self, body: dict):
         try:
             self.sqs.send_message(

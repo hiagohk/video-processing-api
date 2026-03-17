@@ -18,12 +18,9 @@ sqs = SQSClient()
 
 MAX_RETRIES = 3
 PROCESSING_TIMEOUT = 60
-POLL_INTERVAL = 2  # segundos entre tentativas quando não há mensagens
+POLL_INTERVAL = 2
 
 
-# ----------------------------
-# Retry with exponential backoff
-# ----------------------------
 def retry_with_backoff(fn, *args, retries: int = MAX_RETRIES, base_delay: int = 2):
     for attempt in range(1, retries + 1):
         try:
@@ -43,18 +40,12 @@ def retry_with_backoff(fn, *args, retries: int = MAX_RETRIES, base_delay: int = 
             time.sleep(delay)
 
 
-# ----------------------------
-# Timeout wrapper
-# ----------------------------
 def run_with_timeout(fn, *args, timeout: int = PROCESSING_TIMEOUT):
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(fn, *args)
         return future.result(timeout=timeout)
 
 
-# ----------------------------
-# Video processing
-# ----------------------------
 def process_video(url: str):
     try:
         with yt_dlp.YoutubeDL({}) as ydl:
@@ -72,9 +63,6 @@ def process_video(url: str):
     return title, duration
 
 
-# ----------------------------
-# Message handler
-# ----------------------------
 def handle_message(message: Dict):
     receipt = message["ReceiptHandle"]
 
@@ -137,13 +125,9 @@ def handle_message(message: Dict):
 
     finally:
         db.close()
-        # Sempre deletamos a mensagem após processar
         sqs.delete_message(receipt_handle=receipt)
 
 
-# ----------------------------
-# Worker loop
-# ----------------------------
 def worker_loop():
     logger.info("Worker started")
     while True:
