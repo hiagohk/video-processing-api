@@ -62,6 +62,7 @@ def client(db_session):
 
     app.dependency_overrides.clear()
 
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_sqs():
     sqs = boto3.client(

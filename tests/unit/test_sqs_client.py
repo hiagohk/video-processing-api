@@ -46,9 +46,7 @@ def build_message(body):
 # ----------------------------
 def test_receive_message_success(client, mock_sqs):
 
-    mock_sqs.receive_message.return_value = {
-        "Messages": [build_message(json.dumps(VIDEO_MESSAGE))]
-    }
+    mock_sqs.receive_message.return_value = {"Messages": [build_message(json.dumps(VIDEO_MESSAGE))]}
 
     messages = client.receive_message()
 
@@ -58,9 +56,7 @@ def test_receive_message_success(client, mock_sqs):
 
 def test_receive_message_invalid_json(client, mocker, mock_sqs):
 
-    mock_sqs.receive_message.return_value = {
-        "Messages": [build_message("invalid-json")]
-    }
+    mock_sqs.receive_message.return_value = {"Messages": [build_message("invalid-json")]}
 
     dlq = mocker.patch.object(client, "send_to_dlq")
     delete = mocker.patch.object(client, "delete_message")
@@ -97,9 +93,7 @@ def test_delete_message_success(client, mock_sqs):
 
 def test_delete_message_error(client, mock_sqs):
 
-    mock_sqs.delete_message.side_effect = ClientError(
-        {"Error": {"Code": "500"}}, "delete_message"
-    )
+    mock_sqs.delete_message.side_effect = ClientError({"Error": {"Code": "500"}}, "delete_message")
 
     with pytest.raises(QueueDeleteError):
         client.delete_message("abc")
@@ -122,9 +116,7 @@ def test_send_message_success(client, mock_sqs):
 
 def test_send_message_error(client, mock_sqs):
 
-    mock_sqs.send_message.side_effect = ClientError(
-        {"Error": {"Code": "500"}}, "send_message"
-    )
+    mock_sqs.send_message.side_effect = ClientError({"Error": {"Code": "500"}}, "send_message")
 
     with pytest.raises(QueuePublishError):
         client.send_message(VIDEO_MESSAGE)

@@ -50,7 +50,9 @@ class SQSClient:
                 try:
                     msg["Body"] = json.loads(msg["Body"])
                 except json.JSONDecodeError as e:
-                    logger.warning("Invalid message body, moving to DLQ", extra={"body": msg["Body"]})
+                    logger.warning(
+                        "Invalid message body, moving to DLQ", extra={"body": msg["Body"]}
+                    )
                     self.send_to_dlq({"raw_message": msg["Body"]})
                     self.delete_message(msg["ReceiptHandle"])
                     raise InvalidQueueMessageError() from e

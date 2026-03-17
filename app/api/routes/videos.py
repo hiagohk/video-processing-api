@@ -16,7 +16,4 @@ def create(
 ):
     req = create_video(db, video.video_url, idempotency_key)
 
-    return {
-        "id": req.id,
-        "status": req.status
-    }
+    return {"id": req.id, "status": req.status}

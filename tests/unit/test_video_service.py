@@ -10,22 +10,14 @@ def test_create_video_success(mocker):
 
     db = MagicMock()
 
-    mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=None
-    )
+    mocker.patch("app.services.video_service.find_by_idempotency", return_value=None)
 
     req = MagicMock()
     req.id = "123"
 
-    mocker.patch(
-        "app.services.video_service.create_video_request",
-        return_value=req
-    )
+    mocker.patch("app.services.video_service.create_video_request", return_value=req)
 
-    send = mocker.patch(
-        "app.services.video_service.sqs_client.send_message"
-    )
+    send = mocker.patch("app.services.video_service.sqs_client.send_message")
 
     result = create_video(db, "video.mp4", "abc")
 
@@ -40,10 +32,7 @@ def test_create_video_idempotent(mocker):
     existing = MagicMock()
     existing.id = "existing"
 
-    mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=existing
-    )
+    mocker.patch("app.services.video_service.find_by_idempotency", return_value=existing)
 
     result = create_video(db, "video.mp4", "same-key")
 
@@ -53,22 +42,15 @@ def test_create_video_idempotent(mocker):
 def test_create_video_queue_error(mocker):
     db = MagicMock()
 
-    mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=None
-    )
+    mocker.patch("app.services.video_service.find_by_idempotency", return_value=None)
 
     req = MagicMock()
     req.id = "123"
 
-    mocker.patch(
-        "app.services.video_service.create_video_request",
-        return_value=req
-    )
+    mocker.patch("app.services.video_service.create_video_request", return_value=req)
 
     mocker.patch(
-        "app.services.video_service.sqs_client.send_message",
-        side_effect=Exception("queue error")
+        "app.services.video_service.sqs_client.send_message", side_effect=Exception("queue error")
     )
 
     with pytest.raises(QueuePublishError):
@@ -76,22 +58,16 @@ def test_create_video_queue_error(mocker):
 
     db.rollback.assert_called_once()
 
+
 def test_create_video_calls_repository(mocker):
 
     db = MagicMock()
 
-    find = mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=None
-    )
+    find = mocker.patch("app.services.video_service.find_by_idempotency", return_value=None)
 
-    create = mocker.patch(
-        "app.services.video_service.create_video_request"
-    )
+    create = mocker.patch("app.services.video_service.create_video_request")
 
-    mocker.patch(
-        "app.services.video_service.sqs_client.send_message"
-    )
+    mocker.patch("app.services.video_service.sqs_client.send_message")
 
     create_video(db, "video.mp4", "key")
 
@@ -103,22 +79,14 @@ def test_create_video_sends_sqs(mocker):
 
     db = MagicMock()
 
-    mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=None
-    )
+    mocker.patch("app.services.video_service.find_by_idempotency", return_value=None)
 
     req = MagicMock()
     req.id = "abc"
 
-    mocker.patch(
-        "app.services.video_service.create_video_request",
-        return_value=req
-    )
+    mocker.patch("app.services.video_service.create_video_request", return_value=req)
 
-    send = mocker.patch(
-        "app.services.video_service.sqs_client.send_message"
-    )
+    send = mocker.patch("app.services.video_service.sqs_client.send_message")
 
     create_video(db, "video.mp4", "key")
 
@@ -132,10 +100,7 @@ def test_create_video_returns_existing(mocker):
     existing = MagicMock()
     existing.id = "xyz"
 
-    mocker.patch(
-        "app.services.video_service.find_by_idempotency",
-        return_value=existing
-    )
+    mocker.patch("app.services.video_service.find_by_idempotency", return_value=existing)
 
     result = create_video(db, "video.mp4", "key")
 

@@ -20,15 +20,15 @@ def create_video(db: Session, url: str, key: str):
 
     try:
         # Enviar para a fila SQS usando o SQSClient
-        sqs_client.send_message({
-            "video_request_id": str(req.id),
-            "video_url": url,
-            "retries": 0  # inicializa contagem de retries
-        })
+        sqs_client.send_message(
+            {
+                "video_request_id": str(req.id),
+                "video_url": url,
+                "retries": 0,  # inicializa contagem de retries
+            }
+        )
     except Exception as e:
         db.rollback()
-        raise QueuePublishError(
-            context={"video_request_id": str(req.id)}
-        ) from e
+        raise QueuePublishError(context={"video_request_id": str(req.id)}) from e
 
     return req

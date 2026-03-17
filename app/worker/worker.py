@@ -31,7 +31,7 @@ def retry_with_backoff(fn, *args, retries: int = MAX_RETRIES, base_delay: int = 
         except VideoDownloadError as e:
             if attempt == retries:
                 raise
-            delay = base_delay ** attempt
+            delay = base_delay**attempt
             logger.warning(
                 "Retrying video processing",
                 extra={
@@ -129,9 +129,7 @@ def handle_message(message: Dict):
 
             if retries >= MAX_RETRIES:
                 update_status(db, req, "FAILED")
-                sqs.send_to_dlq(
-                    {"video_request_id": request_id, "video_url": url}
-                )
+                sqs.send_to_dlq({"video_request_id": request_id, "video_url": url})
             else:
                 sqs.send_message(
                     {"video_request_id": request_id, "video_url": url, "retries": retries + 1}

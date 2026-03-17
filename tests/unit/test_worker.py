@@ -19,14 +19,10 @@ def test_retry_with_backoff_success():
     assert result == "ok"
     fn.assert_called_once()
 
+
 def test_retry_with_backoff_retry_success(mocker):
 
-    fn = MagicMock(
-        side_effect=[
-            VideoDownloadError(context={}),
-            "success"
-        ]
-    )
+    fn = MagicMock(side_effect=[VideoDownloadError(context={}), "success"])
 
     sleep = mocker.patch("app.worker.worker.time.sleep")
 
@@ -36,6 +32,7 @@ def test_retry_with_backoff_retry_success(mocker):
     assert fn.call_count == 2
     sleep.assert_called_once()
 
+
 def test_run_with_timeout_success():
 
     fn = MagicMock(return_value="done")
@@ -44,19 +41,17 @@ def test_run_with_timeout_success():
 
     assert result == "done"
 
+
 def test_process_video_success(mocker):
 
-    fake_info = {
-        "title": "Test Video",
-        "duration": 120
-    }
+    fake_info = {"title": "Test Video", "duration": 120}
 
     ydl_mock = MagicMock()
     ydl_mock.extract_info.return_value = fake_info
 
     mocker.patch(
         "app.worker.worker.yt_dlp.YoutubeDL",
-        return_value=MagicMock(__enter__=lambda s: ydl_mock, __exit__=lambda *a: None)
+        return_value=MagicMock(__enter__=lambda s: ydl_mock, __exit__=lambda *a: None),
     )
 
     title, duration = process_video("http://video.com")
@@ -64,15 +59,14 @@ def test_process_video_success(mocker):
     assert title == "Test Video"
     assert duration == 120
 
+
 def test_handle_message_success(mocker):
 
     message = {
         "ReceiptHandle": "abc",
-        "Body": json.dumps({
-            "video_request_id": "1",
-            "video_url": "http://video.com",
-            "retries": 0
-        })
+        "Body": json.dumps(
+            {"video_request_id": "1", "video_url": "http://video.com", "retries": 0}
+        ),
     }
 
     db = MagicMock()
@@ -93,15 +87,14 @@ def test_handle_message_success(mocker):
     update.assert_called_once()
     delete.assert_called_once()
 
+
 def test_handle_message_retry(mocker):
 
     message = {
         "ReceiptHandle": "abc",
-        "Body": json.dumps({
-            "video_request_id": "1",
-            "video_url": "http://video.com",
-            "retries": 1
-        })
+        "Body": json.dumps(
+            {"video_request_id": "1", "video_url": "http://video.com", "retries": 1}
+        ),
     }
 
     db = MagicMock()
@@ -111,10 +104,7 @@ def test_handle_message_retry(mocker):
     mocker.patch("app.worker.worker.SessionLocal", return_value=db)
     db.query.return_value.filter.return_value.first.return_value = req
 
-    mocker.patch(
-        "app.worker.worker.run_with_timeout",
-        side_effect=Exception("fail")
-    )
+    mocker.patch("app.worker.worker.run_with_timeout", side_effect=Exception("fail"))
 
     send = mocker.patch("app.worker.worker.sqs.send_message")
     delete = mocker.patch("app.worker.worker.sqs.delete_message")

@@ -7,6 +7,7 @@ from app.exceptions import AppError
 
 logger = logging.getLogger(__name__)
 
+
 async def app_error_handler(request: Request, exc: AppError):
 
     logger.error(
@@ -22,6 +23,8 @@ async def app_error_handler(request: Request, exc: AppError):
         status_code=exc.http_status,
         content=exc.to_dict(),
     )
+
+
 async def unexpected_error_handler(request: Request, exc: Exception):
 
     logger.exception("Unexpected error occurred")
