@@ -18,4 +18,4 @@ test: build
 	docker-compose run --rm test
 
 format:
-	black .
+	black --check .

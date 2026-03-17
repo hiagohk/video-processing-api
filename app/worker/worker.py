@@ -61,8 +61,8 @@ def process_video(url: str):
             info = ydl.extract_info(url, download=False)
     except yt_dlp.utils.DownloadError as e:
         raise VideoDownloadError(context={"url": url}) from e
-    except Exception:
-        raise VideoProcessingError(context={"url": url})
+    except Exception as e:
+        raise VideoProcessingError(context={"url": url}) from e
 
     title = info.get("title")
     if not title:

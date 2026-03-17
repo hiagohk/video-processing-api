@@ -49,11 +49,11 @@ class SQSClient:
             for msg in messages:
                 try:
                     msg["Body"] = json.loads(msg["Body"])
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as e:
                     logger.warning("Invalid message body, moving to DLQ", extra={"body": msg["Body"]})
                     self.send_to_dlq({"raw_message": msg["Body"]})
                     self.delete_message(msg["ReceiptHandle"])
-                    raise InvalidQueueMessageError()
+                    raise InvalidQueueMessageError() from e
             return messages
         except (BotoCoreError, ClientError) as e:
             logger.exception("Failed to receive messages from SQS")

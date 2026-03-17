@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from app.exceptions.queue import QueuePublishError
 from app.services.video_service import create_video
 
 
@@ -50,7 +51,6 @@ def test_create_video_idempotent(mocker):
 
 
 def test_create_video_queue_error(mocker):
-
     db = MagicMock()
 
     mocker.patch(
@@ -71,9 +71,10 @@ def test_create_video_queue_error(mocker):
         side_effect=Exception("queue error")
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(QueuePublishError):
         create_video(db, "video.mp4", "key")
 
+    db.rollback.assert_called_once()
 
 def test_create_video_calls_repository(mocker):
 
