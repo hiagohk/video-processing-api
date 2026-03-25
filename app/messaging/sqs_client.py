@@ -58,7 +58,6 @@ class SQSClient:
             logger.exception("Failed to receive messages from SQS")
             raise QueueReceiveError() from e
 
-
     def delete_message(self, receipt_handle: str):
         try:
             self.sqs.delete_message(
@@ -69,7 +68,6 @@ class SQSClient:
         except (BotoCoreError, ClientError) as e:
             logger.exception("Failed to delete message from SQS")
             raise QueueDeleteError() from e
-
 
     def send_message(self, body: dict, delay_seconds: int = 0):
         try:
@@ -82,7 +80,6 @@ class SQSClient:
         except (BotoCoreError, ClientError) as e:
             logger.exception("Failed to send message to SQS")
             raise QueuePublishError() from e
-
 
     def send_to_dlq(self, body: dict):
         try:
