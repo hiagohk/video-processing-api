@@ -81,7 +81,7 @@ jobs:
 
             echo "Attempt $i: $response"
 
-            if echo "$response" | grep '"sqs": "running"'; then
+            if echo "$response" | grep '"sqs": "available"\|"sqs": "running"'; then
               echo "LocalStack is ready!"
               exit 0
             fi
