@@ -10,6 +10,7 @@ from sqlalchemy.pool import StaticPool
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
+from botocore.config import Config
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -71,6 +72,10 @@ def setup_sqs():
         region_name="us-east-1",
         aws_access_key_id="test",
         aws_secret_access_key="test",
+        config=Config(
+            signature_version="v4",
+            retries={"max_attempts": 3},
+        ),
     )
 
     # espera o LocalStack ficar pronto
