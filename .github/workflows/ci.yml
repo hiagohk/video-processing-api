@@ -72,6 +72,26 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+      - name: Wait for LocalStack to be ready
+        run: |
+          echo "Waiting for LocalStack..."
+
+          for i in {1..30}; do
+            response=$(curl -s http://localhost:4566/_localstack/health || true)
+
+            echo "Attempt $i: $response"
+
+            if echo "$response" | grep '"sqs": "running"'; then
+              echo "LocalStack is ready!"
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "LocalStack did not become ready in time"
+          exit 1
+
       - name: Rodar migrations (Alembic)
         run: alembic upgrade head
 
