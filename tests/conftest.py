@@ -2,6 +2,7 @@ import time
 
 import boto3
 import pytest
+from botocore.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +11,6 @@ from sqlalchemy.pool import StaticPool
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
-from botocore.config import Config
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
