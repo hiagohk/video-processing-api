@@ -3,7 +3,6 @@ import time
 
 import boto3
 import pytest
-import requests
 from botocore.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -67,6 +66,13 @@ def client(db_session):
     app.dependency_overrides.clear()
 
 
+def ensure_queue(sqs, name):
+    try:
+        return sqs.get_queue_url(QueueName=name)
+    except sqs.exceptions.QueueDoesNotExist:
+        return sqs.create_queue(QueueName=name)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_sqs():
     sqs = boto3.client(
@@ -81,18 +87,15 @@ def setup_sqs():
         ),
     )
 
-    # espera o LocalStack ficar pronto
+    # espera SQS de verdade (não health fake)
     for _ in range(20):
         try:
-            health = requests.get(f"{endpoint_url}/_localstack/health").json()
-            if health.get("services", {}).get("sqs") == "running":
-                break
+            sqs.list_queues()
+            break
         except Exception:
-            pass
-        time.sleep(3)
+            time.sleep(3)
     else:
-        raise RuntimeError("LocalStack SQS not ready")
+        raise RuntimeError("SQS not ready")
 
-    # cria filas (idempotente)
-    sqs.create_queue(QueueName="video-processing-queue")
-    sqs.create_queue(QueueName="video-processing-dlq")
+    ensure_queue(sqs, "video-processing-queue")
+    ensure_queue(sqs, "video-processing-dlq")
