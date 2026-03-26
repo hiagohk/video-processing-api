@@ -75,6 +75,10 @@ def ensure_queue(sqs, name):
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_sqs():
+    if not endpoint_url:
+        yield  # pula SQS em ambiente sem LocalStack
+        return
+
     sqs = boto3.client(
         "sqs",
         endpoint_url=endpoint_url,
@@ -87,7 +91,6 @@ def setup_sqs():
         ),
     )
 
-    # espera SQS de verdade (não health fake)
     for _ in range(20):
         try:
             sqs.list_queues()
@@ -99,3 +102,5 @@ def setup_sqs():
 
     ensure_queue(sqs, "video-processing-queue")
     ensure_queue(sqs, "video-processing-dlq")
+
+    yield
