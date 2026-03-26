@@ -1,3 +1,4 @@
+import os
 import time
 
 import boto3
@@ -14,6 +15,7 @@ from app.db.session import get_db
 from app.main import app
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
+endpoint_url = os.getenv("AWS_ENDPOINT_URL")
 
 
 engine = create_engine(
@@ -69,7 +71,7 @@ def client(db_session):
 def setup_sqs():
     sqs = boto3.client(
         "sqs",
-        endpoint_url="http://localhost:4566",
+        endpoint_url=endpoint_url,
         region_name="us-east-1",
         aws_access_key_id="test",
         aws_secret_access_key="test",
@@ -82,12 +84,14 @@ def setup_sqs():
     # espera o LocalStack ficar pronto
     for _ in range(20):
         try:
-            health = requests.get("http://localhost:4566/_localstack/health").json()
+            health = requests.get(f"{endpoint_url}/_localstack/health").json()
             if health.get("services", {}).get("sqs") == "running":
                 break
         except Exception:
             pass
         time.sleep(3)
+    else:
+        raise RuntimeError("LocalStack SQS not ready")
 
     # cria filas (idempotente)
     sqs.create_queue(QueueName="video-processing-queue")
