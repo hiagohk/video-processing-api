@@ -1,7 +1,9 @@
+import os
 import time
 
 import boto3
 import pytest
+from botocore.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,6 +14,7 @@ from app.db.session import get_db
 from app.main import app
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
+endpoint_url = os.getenv("AWS_ENDPOINT_URL")
 
 
 engine = create_engine(
@@ -63,24 +66,41 @@ def client(db_session):
     app.dependency_overrides.clear()
 
 
+def ensure_queue(sqs, name):
+    try:
+        return sqs.get_queue_url(QueueName=name)
+    except sqs.exceptions.QueueDoesNotExist:
+        return sqs.create_queue(QueueName=name)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_sqs():
+    if not endpoint_url:
+        yield  # pula SQS em ambiente sem LocalStack
+        return
+
     sqs = boto3.client(
         "sqs",
-        endpoint_url="http://localstack:4566",
+        endpoint_url=endpoint_url,
         region_name="us-east-1",
         aws_access_key_id="test",
         aws_secret_access_key="test",
+        config=Config(
+            signature_version="v4",
+            retries={"max_attempts": 3},
+        ),
     )
 
-    # espera o LocalStack ficar pronto
-    for _ in range(10):
+    for _ in range(20):
         try:
             sqs.list_queues()
             break
         except Exception:
-            time.sleep(2)
+            time.sleep(3)
+    else:
+        raise RuntimeError("SQS not ready")
 
-    # cria filas (idempotente)
-    sqs.create_queue(QueueName="video-processing-queue")
-    sqs.create_queue(QueueName="video-processing-dlq")
+    ensure_queue(sqs, "video-processing-queue")
+    ensure_queue(sqs, "video-processing-dlq")
+
+    yield
